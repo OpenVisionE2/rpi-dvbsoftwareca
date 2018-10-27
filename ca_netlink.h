@@ -1,7 +1,7 @@
 #ifndef __CA_NETLINK_H
 #define __CA_NETLINK_H
 
-#include <linux/dvb/ca.h>
+#include "ca.h"
 #include <linux/netlink.h>
 #include <net/genetlink.h>
 #include <linux/kernel.h>
