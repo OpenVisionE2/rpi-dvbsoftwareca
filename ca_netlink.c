@@ -12,14 +12,6 @@ struct nla_policy ca_policy[ATTR_MAX + 1] = {
 	[ATTR_CA_SIZE] = { .type = NLA_U32 },
 };
 
-struct genl_family ca_family = {
-	.id = GENL_ID_GENERATE,
-	.hdrsize = 0,
-	.name = "CA_SEND",
-	.version = 1,
-	.maxattr = ATTR_MAX,
-};
-
 // commands: mapping between the command enumeration and the actual function
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,13,0)
 struct genl_ops ask_ca_size_ops = {
@@ -34,6 +26,20 @@ struct genl_ops ask_ca_size_ops[] = {
 	.dumpit = NULL,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,13,0)
 	},
+#endif
+};
+
+struct genl_family ca_family = {
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(4,9,0)
+	.id = GENL_ID_GENERATE,
+#endif
+	.hdrsize = 0,
+	.name = "CA_SEND",
+	.version = 1,
+	.maxattr = ATTR_MAX,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,9,0)
+	.ops = ask_ca_size_ops,
+	.n_ops = ARRAY_SIZE(ask_ca_size_ops),
 #endif
 };
 
@@ -163,8 +169,10 @@ int register_netlink(void) {
 	// register new family
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,13,0)
 	ret = genl_register_family(&ca_family);
-#else
+#elseif LINUX_VERSION_CODE <= KERNEL_VERSION(4,9,0)
 	ret = genl_register_family_with_ops(&ca_family, ask_ca_size_ops);
+#else
+	ret = genl_register_family(&ca_family);
 #endif
 	if (ret) {
 		printk("dvbsoftwareca: genl_register_family error\n");
