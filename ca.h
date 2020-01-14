@@ -144,6 +144,12 @@ typedef struct ca_pid {
 #define CA_GET_MSG        _IOR('o', 132, ca_msg_t)
 #define CA_SEND_MSG       _IOW('o', 133, ca_msg_t)
 #define CA_SET_DESCR      _IOW('o', 134, ca_descr_t)
-#define CA_SET_PID        _IOW('o', 135, ca_pid_t)
+#ifndef CA_SET_PID /* removed in kernel 4.14 */
+typedef struct ca_pid {
+        unsigned int pid;
+        int index;          /* -1 == disable */
+} ca_pid_t;
+#define CA_SET_PID _IOW('o', 135, struct ca_pid)
+#endif
 
 #endif
