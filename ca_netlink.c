@@ -21,7 +21,9 @@ struct genl_ops ask_ca_size_ops[] = {
 #endif
 	.cmd = CMD_ASK_CA_SIZE,
 	.flags = 0,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5,1,0)
 	.policy = ca_policy,
+#endif
 	.doit = reply_ca,
 	.dumpit = NULL,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,13,0)
@@ -40,6 +42,9 @@ struct genl_family ca_family = {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,9,0)
 	.ops = ask_ca_size_ops,
 	.n_ops = ARRAY_SIZE(ask_ca_size_ops),
+#endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,1,0)
+	.policy = ca_policy,
 #endif
 };
 
