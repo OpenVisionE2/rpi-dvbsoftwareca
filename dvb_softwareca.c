@@ -135,7 +135,13 @@ static int ca_ioctl(struct inode *inode, struct file *f,
 
 	return -EFAULT;
 }
-
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
+static const struct proc_ops ca_device_fops = {
+	.proc_open	= ca_open,
+	.proc_release	= ca_release,
+	.proc_ioctl	= ca_ioctl,
+};
+#else
 static struct file_operations ca_device_fops = {
 	.owner		= THIS_MODULE,
 	.open		= ca_open,
@@ -146,7 +152,7 @@ static struct file_operations ca_device_fops = {
 	.ioctl		= ca_ioctl,
 #endif
 };
-
+#endif
 static void destroy_ca_device(struct ca_device *cadev)
 {
 	if (!cadev)
