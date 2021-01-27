@@ -93,14 +93,13 @@ static int ca_release(struct inode *inode, struct file *f)
 	return 0;
 }
 
-#ifdef HAVE_UNLOCKED_IOCTL
-static long ca_ioctl(struct file *f,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35)
+static long ca_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 #else
-static int ca_ioctl(struct inode *inode, struct file *f,
+static int ca_ioctl(struct inode *inode, struct file *f, unsigned int cmd, unsigned long arg)
 #endif
-	unsigned int cmd, unsigned long arg)
 {
-#ifdef HAVE_UNLOCKED_IOCTL
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35)
 	struct inode *inode = f->f_path.dentry->d_inode;
 #endif
 	struct ca_device *cadev = find_device(iminor(inode));
@@ -114,7 +113,7 @@ static int ca_ioctl(struct inode *inode, struct file *f,
 			cadev->device_num, cmd);
 
 	if (cmd == CA_SET_DESCR) {
-		ca_descr_t *ca_descr = (ca_descr_t *)arg;
+		struct ca_descr *ca_descr = (struct ca_descr *)arg;
 		unsigned short ca_num = ((cadev->adapter_num&0xFF)<<8)|(cadev->device_num&0xFF);
 
 		printk("cactl CA_SET_DESCR par %d idx %d %02X...%02X\n",
@@ -124,7 +123,7 @@ static int ca_ioctl(struct inode *inode, struct file *f,
 		return 0;
 	}
 	if (cmd == CA_SET_PID) {
-		ca_pid_t *ca_pid = (ca_pid_t *)arg;
+		struct ca_pid *ca_pid = (struct ca_pid *)arg;
 		unsigned short ca_num = ((cadev->adapter_num&0xFF)<<8)|(cadev->device_num&0xFF);
 
 		printk("cactl CA_SET_PID %04X index %d\n", ca_pid->pid, ca_pid->index);
@@ -135,24 +134,18 @@ static int ca_ioctl(struct inode *inode, struct file *f,
 
 	return -EFAULT;
 }
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,6,0)
-static const struct proc_ops ca_device_fops = {
-	.proc_open	= ca_open,
-	.proc_release	= ca_release,
-	.proc_ioctl	= ca_ioctl,
-};
-#else
+
 static struct file_operations ca_device_fops = {
 	.owner		= THIS_MODULE,
 	.open		= ca_open,
 	.release	= ca_release,
-#ifdef HAVE_UNLOCKED_IOCTL
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35)
 	.unlocked_ioctl = ca_ioctl,
 #else
 	.ioctl		= ca_ioctl,
 #endif
 };
-#endif
+
 static void destroy_ca_device(struct ca_device *cadev)
 {
 	if (!cadev)

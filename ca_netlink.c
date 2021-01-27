@@ -100,7 +100,7 @@ int reply_ca(struct sk_buff *skb_2, struct genl_info *info)
 	return 0;
 }
 
-int netlink_send_cw(unsigned short ca_num, ca_descr_t *ca_descr) {
+int netlink_send_cw(unsigned short ca_num, struct ca_descr *ca_descr) {
         struct sk_buff *skb;
 	void *msg_head;
 	int ret;
@@ -117,7 +117,7 @@ int netlink_send_cw(unsigned short ca_num, ca_descr_t *ca_descr) {
 	ret = nla_put_u16(skb, ATTR_CA_NUM, ca_num);
 	if (ret)
 		goto out;
-	ret = nla_put(skb, ATTR_CA_DESCR, sizeof(ca_descr_t), ca_descr);
+	ret = nla_put(skb, ATTR_CA_DESCR, sizeof(struct ca_descr), ca_descr);
 	if (ret)
 		goto out;
 
@@ -134,7 +134,7 @@ int netlink_send_cw(unsigned short ca_num, ca_descr_t *ca_descr) {
 	return 0;
 }
 
-int netlink_send_pid(unsigned short ca_num, ca_pid_t *ca_pid) {
+int netlink_send_pid(unsigned short ca_num, struct ca_pid *ca_pid) {
         struct sk_buff *skb;
 	void *msg_head;
 	int ret;
@@ -151,7 +151,7 @@ int netlink_send_pid(unsigned short ca_num, ca_pid_t *ca_pid) {
 	ret = nla_put_u16(skb, ATTR_CA_NUM, ca_num);
 	if (ret)
 		goto out;
-	ret = nla_put(skb, ATTR_CA_PID, sizeof(ca_pid_t), ca_pid);
+	ret = nla_put(skb, ATTR_CA_PID, sizeof(struct ca_pid), ca_pid);
 	if (ret)
 		goto out;
 
