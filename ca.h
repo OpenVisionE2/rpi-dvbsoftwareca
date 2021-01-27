@@ -154,6 +154,7 @@ typedef struct ca_descr_info  ca_descr_info_t;
 typedef struct ca_caps  ca_caps_t;
 typedef struct ca_msg ca_msg_t;
 typedef struct ca_descr ca_descr_t;
+typedef struct ca_pid ca_pid_t;
 
 #endif
 
