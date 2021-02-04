@@ -23,8 +23,8 @@
  *
  */
 
-#define DVBSOFTWARECA_VERSION "0.0.1"
-#define DVBSOFTWARECA_MAJOR 236
+#define DVBSOFTWARECA_VERSION "10.2.0"
+#define DVBSOFTWARECA_MAJOR 347
 
 #include <linux/errno.h>
 #include <linux/module.h>
